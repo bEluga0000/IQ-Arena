@@ -7,8 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
+import QuestionLoaderEffect from "@/components/QuestionLoader";
 
 interface QuestionSchema {
     category: string,
@@ -56,6 +55,7 @@ const Question = () => {
     useEffect(() => {
         (async () => {
             try {
+                setLoading(true)
                 const questionLevel = presentQuestinoNumber <= 2 ? "easy" : presentQuestinoNumber <= 4 && presentQuestinoNumber > 2 ? "medium" : "hard"
                 const res = await axios.get(`${API_URL}&categories=${presentCategory}&difficulties=${questionLevel}`)
                 if (res.data) {
@@ -84,12 +84,12 @@ const Question = () => {
         setPlayer2Score(0)
         setPresentCategory("")
     }
-    const updatedSelected = (selected: string) => {
-
-    }
     return <div>
         {
-            isLoading && <div>Loading ....</div>
+            isLoading && <QuestionLoaderEffect/>
+        }
+        {
+            !isLoading && err && <div className="text-xl text-white">Something went wrong go to home page and refresh the page </div>
         }
         {
             !isLoading && question && <div className="flex flex-col gap-3">
@@ -101,6 +101,9 @@ const Question = () => {
                         {presentQuestinoNumber <= 2 ? "easy" : presentQuestinoNumber <= 4 && presentQuestinoNumber > 2 ? "medium" : "hard"}
                     </div>
                 </div> */}
+                <div className="text-lg text-white w-full flex items-center justify-center">
+                    {presentQuestinoNumber%2 == 0 ? player2Name +" turn": player1Name +" turn"}
+                </div>
                 <div>
                     <div className="w-full flex justify-center">
                         <div className="flex items-center md:flex-row flex-col justify-center md:w-5/6 w-full gap-2">
@@ -118,7 +121,7 @@ const Question = () => {
                                     <GiSpeaker className="text-[#182e38] text-3xl font-black" />
                                 </div>
                                 <div className="text-2xl text-[#f1f7fb] font-bold tracking-wider text-center">
-                                    {question.question.text}{question.correctAnswer}
+                                    {question.question.text}
                                 </div>
                             </div>
                         </div>
